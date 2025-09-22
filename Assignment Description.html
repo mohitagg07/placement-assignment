@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCB Component Placement - Coding Assignment</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #721c24;
+        }
+        .board-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .board {
+            width: 500px;
+            height: 500px;
+            border: 3px solid #2c3e50;
+            background-color: #ecf0f1;
+            position: relative;
+            background-image: 
+                linear-gradient(rgba(52, 73, 93, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(52, 73, 93, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        .component {
+            position: absolute;
+            border: 2px solid #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            border-radius: 3px;
+            width: 50px;
+            height: 50px;
+        }
+        .usb { 
+            background-color: #e74c3c;
+            bottom: 0px; 
+            left: 200px; 
+        }
+        .microcontroller { 
+            background-color: #3498db;
+            top: 225px; 
+            left: 225px; 
+        }
+        .crystal { 
+            background-color: #f39c12;
+            top: 175px; 
+            left: 275px; 
+        }
+        .mikrobus1 { 
+            background-color: #9b59b6;
+            top: 100px; 
+            left: 0px;
+            width: 50px;
+            height: 150px;
+        }
+        .mikrobus2 { 
+            background-color: #8e44ad;
+            top: 100px; 
+            right: 0px;
+            width: 50px;
+            height: 150px;
+        }
+        .proximity-indicator {
+            position: absolute;
+            border: 2px dashed #f39c12;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            top: 200px;
+            left: 200px;
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+		.crystal-keepout-zone {
+			position: absolute;
+			border: 2px dashed #e74c3c;
+			width: 100px;    /* 10 units */
+			height: 150px;   /* 15 units */
+			bottom: 50px;    /* Extending upward from USB */
+			left: 175px;     /* Centered on USB */
+			background-color: rgba(231, 76, 60, 0.15); /* Semi-transparent red */
+		}
+        .constraint-box {
+            background-color: #e8f6f3;
+            border-left: 4px solid #16a085;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .legend {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        ul, ol {
+            padding-left: 25px;
+        }
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PCB Component Placement System - Coding Assignment</h1>
+
+        <h2>Assignment Overview</h2>
+        <p>You are tasked with implementing a 2D rectangular packing algorithm to solve a spatial placement problem. This assignment focuses on constraint-based optimization and geometric algorithms for placing rectangular components on a circuit board.</p>
+
+        <p><strong>Background Context</strong>: In circuit board design, components must be placed on a rectangular board following specific spatial rules. Your algorithm will determine optimal positions for rectangular components while satisfying placement constraints.</p>
+
+        <div class="warning">
+            <strong>Important Notice:</strong> Hardcoding component positions to specific coordinates is strictly prohibited and will result in assignment failure. Your solution must use algorithmic approaches to determine component placement based on the constraints provided.
+        </div>
+
+        <h2>Expected Output Visualization</h2>
+        
+        <div class="highlight">
+            <strong>Note:</strong> Below is an example of what your final plot should look like. Your algorithm should produce a similar visualization showing all components placed according to the constraints.
+        </div>
+
+        <div class="board-container">
+            <div class="board">
+                <div class="component usb">USB</div>
+                <div class="component microcontroller">μC</div>
+                <div class="component crystal">XTAL</div>
+                <div class="component mikrobus1">MB1</div>
+                <div class="component mikrobus2">MB2</div>
+                <div class="proximity-indicator"></div>
+				<div class="crystal-keepout-zone"></div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #e74c3c;"></div>
+                <span><strong>USB Connector</strong> - Must be placed on board edge</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #3498db;"></div>
+                <span><strong>Microcontroller</strong> - Can be placed anywhere</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f39c12;"></div>
+                <span><strong>Crystal</strong> - Must be within 10 units of Microcontroller</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #9b59b6;"></div>
+                <span><strong>MikroBus 1</strong> - Must be on board edge</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #8e44ad;"></div>
+                <span><strong>MikroBus 2</strong> - Must be on opposite edge, parallel to MB1</span>
+            </div>
+            <div class="legend-item">
+                <div style="width: 20px; height: 20px; border: 2px dashed #f39c12; border-radius: 50%; margin-right: 10px; background-color: rgba(243, 156, 18, 0.1);"></div>
+                <span><strong>Proximity Circle</strong> - Shows 10-unit distance constraint for Crystal</span>
+            </div>
+            <div class="legend-item">
+                <div style="width: 20px; height: 15px; border: 2px dashed #e74c3c; margin-right: 10px; background-color: rgba(231, 76, 60, 0.15);"></div>
+                <span><strong>Crystal Keep-Out Zone</strong> - Clock signal path cannot cross this interference zone</span>
+            </div>
+        </div>
+
+        <h2>Problem Definition</h2>
+
+        <h3>Input Specifications</h3>
+
+        <p><strong>Board Dimensions</strong>:</p>
+        <ul>
+            <li>2D rectangular grid: 50 × 50 units</li>
+            <li>Origin at top-left corner (0,0)</li>
+            <li>Coordinate system: (x, y) where x increases rightward, y increases downward</li>
+            <li><strong>Grid Constraint</strong>: All component coordinates are on a <strong>1-unit</strong> grid.</li>
+        </ul>
+
+        <p><strong>Components to Place</strong>:</p>
+
+        <ol>
+            <li><strong>USB_CONNECTOR</strong> - Size: 5 × 5 units - Must be placed along any board edge</li>
+            <li><strong>MICROCONTROLLER</strong> - Size: 5 × 5 units - Can be placed anywhere (subject to proximity constraint)</li>
+            <li><strong>MIKROBUS_CONNECTOR_1</strong> - Size: 5 × 15 units - Must be placed along a board edge</li>
+            <li><strong>MIKROBUS_CONNECTOR_2</strong> - Size: 5 × 15 units - Must be placed along a board edge</li>
+            <li><strong>CRYSTAL</strong> - Size: 5 × 5 units - Must be placed near the MICROCONTROLLER</li>
+        </ol>
+
+        <p><strong>Orientation Constraint</strong>: Each component may be placed with rotation <strong>0° or 90°</strong>.</p>
+
+        <h3>Constraint Requirements</h3>
+
+        <div class="constraint-box">
+            <h4>Hard Constraints (Must be satisfied)</h4>
+            <ol>
+                <li><strong>Edge Placement</strong>: USB_CONNECTOR, MIKROBUS_CONNECTOR_1, and MIKROBUS_CONNECTOR_2 must have at least one edge touching the board boundary</li>
+                <li><strong>Parallel Placement</strong>: MIKROBUS_CONNECTOR_1 and MIKROBUS_CONNECTOR_2 must be:
+                    <ul>
+                        <li>Placed on opposite edges of the board</li>
+                        <li>Aligned parallel to each other (same orientation)</li>
+                    </ul>
+                </li>
+                <li><strong>Proximity Constraint</strong>: CRYSTAL must be placed within maximum distance of 10 units from MICROCONTROLLER center</li>
+                <li><strong>No Overlapping</strong>: Components cannot overlap with each other</li>
+                <li><strong>Boundary Constraint</strong>: All components must be completely within board boundaries</li>
+                <li><strong>Global Balance Constraint</strong>: The geometric center of mass of all 5 placed components must lie within a <strong>2.0-unit radius</strong> of the exact center of the board (25, 25). The center of mass is the average of the center coordinates of all components.</li>
+                <li><strong>Crystal Keep-Out Zone</strong>: The connection between the CRYSTAL and MICROCONTROLLER is a clock signal path that is sensitive to noise from the USB_CONNECTOR.
+                    <ul>
+                        <li>Define a rectangular "keep-out zone" that is <strong>10 units wide</strong> and extends <strong>15 units directly inward</strong> from the center of the USB_CONNECTOR's edge on the board.</li>
+                        <li>The straight line segment connecting the center of the CRYSTAL to the center of the MICROCONTROLLER is <strong>forbidden from intersecting</strong> this keep-out zone.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="constraint-box">
+            <h4>Soft Constraints (Optimization goals)</h4>
+            <ol>
+                <li>Minimize wasted space</li>
+                <li>Maximize compactness of overall layout</li>
+                <li>Prefer center placement for non-constrained components</li>
+            </ol>
+        </div>
+
+        <h2>Technical Requirements</h2>
+
+        <h3>Algorithm Implementation</h3>
+
+        <p>You must develop an algorithmic solution to solve this placement problem. Your implementation should determine optimal component positions while satisfying all constraints.</p>
+
+        <h3>Placement Strategy</h3>
+
+        <p>Your implementation should determine component positions algorithmically. Consider developing scoring functions that balance space efficiency with constraint satisfaction.</p>
+
+        <h3>Constraint Integration Strategy</h3>
+
+        <ol>
+            <li><strong>Pre-placement Phase</strong>: Place edge-constrained components first</li>
+            <li><strong>Constraint-aware Search</strong>: Modify position search to respect proximity constraints</li>
+            <li><strong>Validation Phase</strong>: Verify all constraints after placement</li>
+        </ol>
+
+        <h3>Performance Requirements</h3>
+
+        <div class="constraint-box">
+            <h4>Execution Time Constraint</h4>
+            <p><strong>Performance</strong>: The entire algorithm, from start to finish, must produce a valid placement in <strong>under 2 seconds</strong>. Solutions that are correct but too slow will not receive full marks.</p>
+        </div>
+
+        <h2>Implementation Requirements</h2>
+
+        <h3>Programming Specifications</h3>
+
+        <ul>
+            <li><strong>Language</strong>: Python</li>
+        </ul>
+		
+        <h3>Input/Output Format</h3>
+
+        <p><strong>Input</strong>: Hardcoded component list with constraints</p>
+
+        <p><strong>Output</strong>: Plot visualization displaying the final component placement on the 50×50 board, showing:</p>
+        <ul>
+            <li>Component positions and boundaries</li>
+            <li>Component labels</li>
+            <li>Board boundaries</li>
+            <li>Visual confirmation of constraint satisfaction</li>
+        </ul>
+
+        <h2>Evaluation Criteria</h2>
+
+        <ol>
+            <li><strong>Correctness</strong>: All hard constraints must be satisfied</li>
+            <li><strong>Algorithm Quality</strong>: Use of appropriate algorithmic approaches (no hardcoded positions)</li>
+            <li><strong>Code Quality</strong>: Clean, well-documented, and efficient implementation</li>
+            <li><strong>Optimization</strong>: Consideration of soft constraints and space efficiency</li>
+            <li><strong>Visualization</strong>: Clear and informative plot output</li>
+        </ol>
+
+        <h2>Deliverables</h2>
+
+        <ol>
+            <li><strong>Python Implementation</strong>: Complete algorithmic solution with constraint handling</li>
+            <li><strong>Plot Output</strong>: Visual representation of the final component placement showing all components positioned on the board</li>
+            <li><strong>Documentation</strong>: Brief explanation of your chosen algorithm and approach</li>
+        </ol>
+
+    </div>
+</body>
+</html>
