@@ -35,20 +35,35 @@ The algorithm ensures that all **hard constraints** are satisfied while also opt
 
 ## 📂 Project Structure
 placement_assignment/
+
 │── src/
+
 │ ├── placement_solver.py # Algorithm implementation
+
 │ ├── Test_placement_solver_ver2.py # Provided validation script
+
 │ └── my_valid_submission_placement.json # Algorithm output
+
 │
+
 │── docs/
+
 │ └── Placement_Assignment_Documentation.pdf # Explanation & results
+
 │
+
 │── outputs/
+
 │ └── placement_snapshot.png # Visualization of placement
+
 │
+
 │── README.md # Project overview
+
 │── requirements.txt # Python dependencies
+
 │── .gitignore # Ignore venv/pycache
+
 
 ---
 
@@ -70,11 +85,17 @@ placement_assignment/
 ## Sample Output:
 
 Boundary Constraint   : ✅ PASSED
+
 No Overlapping        : ✅ PASSED
+
 Edge Placement        : ✅ PASSED
+
 Parallel Placement    : ✅ PASSED
+
 Proximity Constraint  : ✅ PASSED
+
 Global Balance        : ✅ PASSED
+
 Keep-Out Zone         : ✅ PASSED
 
 ✅ This placement is fully valid.
@@ -86,5 +107,7 @@ Keep-Out Zone         : ✅ PASSED
 ---
 
 ## 📊 Visualization Output
-![Placement Snapshot](outputs/placement_snapshot.png)
+
+  
+![Placement Snapshot](outputs/placement_snapshot.png.png)
 ---
